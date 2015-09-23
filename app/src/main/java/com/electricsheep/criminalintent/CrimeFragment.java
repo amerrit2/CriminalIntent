@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.media.Image;
 import android.os.Build;
@@ -24,7 +25,9 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
@@ -41,14 +44,16 @@ public class CrimeFragment extends Fragment {
     public static final String CRIME_FRAGMENT_LOG_TAG = "CrimeFragment";
     public static final String EXTRA_CRIME_ID = "com.electricsheep.criminalintent.crime_id";
     public static final String DIALOG_DATE = "date";
+    public static final String DIALOG_IMAGE = "image";
     public static final int REQUEST_DATE = 0;
-    public static final int REQUEST_PHOTO = 1;
 
+    public static final int REQUEST_PHOTO = 1;
     private Crime       mCrime;
     private EditText    mCrimeTitle;
     private Button      mDateButton;
     private CheckBox    mSolvedCheckBox;
     private ImageButton mPhotoButton;
+    private ImageView   mPhotoView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -156,6 +161,21 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+        mPhotoView = (ImageView) v.findViewById(R.id.crime_imageView);
+        mPhotoView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Photo photo = mCrime.getPhoto();
+                if(photo == null){
+                    return;
+                }
+
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                String path = getActivity().getFileStreamPath(photo.getFilename()).getAbsolutePath();
+                ImageFragment.newInstance(path).show(fm, DIALOG_IMAGE);
+            }
+        });
+
         //If camera is not available, disable camera functionality
         PackageManager pm = getActivity().getPackageManager();
         boolean hasCamera = pm.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
@@ -165,9 +185,38 @@ public class CrimeFragment extends Fragment {
         if(!hasCamera){
             mPhotoButton.setEnabled(false);
         }
+
+
         
         return v;
     }
+
+    private void showPhoto(){
+        //(Re)set the image button's image based on our photo
+        Photo photo = mCrime.getPhoto();
+        BitmapDrawable bit= null;
+        if(photo != null){
+            String path = getActivity()
+                    .getFileStreamPath(photo.getFilename()).getAbsolutePath();
+            bit = PictureUtils.getScaledDrawable(getActivity(), path);
+
+        }
+        mPhotoView.setImageDrawable(bit);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        showPhoto();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        PictureUtils.cleanImageView(mPhotoView);
+    }
+
     private void updateDate(){
         DateFormat df = DateFormat.getDateInstance();
         mDateButton.setText(df.format(mCrime.getDate()));
@@ -183,10 +232,22 @@ public class CrimeFragment extends Fragment {
             mCrime.setDate(date);
             updateDate();
         }else if(requestCode == REQUEST_PHOTO){
-            //Create new photo object and attatch it to the crime
+            //Create new photo object and attach it to the crime
             String filename = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
             if(filename != null){
-                Log.i(TAG, "filename: " + filename);
+                Log.i(TAG, "Attaching filename: " + filename + " to crime");
+                Photo p = new Photo(filename);
+
+                Photo oldPhoto = mCrime.getPhoto();
+                if(oldPhoto != null){
+                    File dir = getActivity().getFilesDir();
+                    File file = new File(dir, oldPhoto.getFilename());
+                    file.delete();
+                }
+
+                mCrime.setPhoto(p);
+                showPhoto();
+                Log.i(TAG, "Crime: " + mCrime.getTitle() + " has  a photo");
             }
         }
 

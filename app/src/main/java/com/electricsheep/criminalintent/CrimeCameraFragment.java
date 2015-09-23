@@ -46,7 +46,7 @@ public class CrimeCameraFragment extends android.support.v4.app.Fragment {
         public void onPictureTaken(byte[] bytes, Camera camera) {
             //Create a filename
             String filename = UUID.randomUUID().toString() + ".jpg";
-            //Save the jbeg data to disk
+            //Save the jpeg data to disk
             FileOutputStream os = null;
             boolean success = true;
 
