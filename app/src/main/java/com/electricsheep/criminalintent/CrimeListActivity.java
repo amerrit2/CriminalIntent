@@ -14,4 +14,9 @@ public class CrimeListActivity extends SingleFragmentActivity {
 
         return fragment;
     }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.activity_twopane;
+    }
 }
