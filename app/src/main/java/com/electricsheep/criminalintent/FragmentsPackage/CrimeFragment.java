@@ -1,4 +1,4 @@
-package com.electricsheep.criminalintent;
+package com.electricsheep.criminalintent.FragmentsPackage;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,15 +24,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.electricsheep.criminalintent.Crime;
+import com.electricsheep.criminalintent.ActivitiesPackage.CrimeCameraActivity;
+import com.electricsheep.criminalintent.CrimeLab;
+import com.electricsheep.criminalintent.Photo;
+import com.electricsheep.criminalintent.PictureUtils;
+import com.electricsheep.criminalintent.R;
+
 import java.io.File;
 import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParsePosition;
 import java.util.Date;
 import java.util.UUID;
 
@@ -53,7 +56,7 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_PHOTO = 1;
     private static final int REQEUST_CONTACT = 2;
 
-    private Crime       mCrime;
+    private Crime mCrime;
     private EditText    mCrimeTitle;
     private Button      mDateButton;
     private CheckBox    mSolvedCheckBox;
@@ -61,6 +64,26 @@ public class CrimeFragment extends Fragment {
     private ImageView   mPhotoView;
     private Button      mSuspectButton;
     private ImageButton mCallSuspectButton;
+    private Callbacks   mCallbacks;
+
+    /**
+     * Required interface for hosting activities
+     */
+    public interface Callbacks {
+        void onCrimeUpdated(Crime crime);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
 
     private String getCrimeReport(){
         String solvedString = null;
@@ -147,6 +170,8 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 mCrime.setTitle(charSequence.toString());
+                mCallbacks.onCrimeUpdated(mCrime);
+                getActivity().setTitle(mCrime.getTitle());
             }
 
             @Override
@@ -180,6 +205,7 @@ public class CrimeFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 //Set mCrime's mSolved property
                 mCrime.setSolved(isChecked);
+                mCallbacks.onCrimeUpdated(mCrime);
             }
         });
 
@@ -307,6 +333,7 @@ public class CrimeFragment extends Fragment {
         if(requestCode == REQUEST_DATE){
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_CRIME_DATE);
             mCrime.setDate(date);
+            mCallbacks.onCrimeUpdated(mCrime);
             updateDate();
         }else if(requestCode == REQUEST_PHOTO){
             //Create new photo object and attach it to the crime
@@ -323,6 +350,7 @@ public class CrimeFragment extends Fragment {
                 }
 
                 mCrime.setPhoto(p);
+                mCallbacks.onCrimeUpdated(mCrime);
                 showPhoto();
                 Log.i(TAG, "Crime: " + mCrime.getTitle() + " has  a photo");
             }
@@ -365,6 +393,7 @@ public class CrimeFragment extends Fragment {
                 mCrime.setPhoneNumber(getPhoneNumber(c.getString(_idIndex)));
             }
 
+            mCallbacks.onCrimeUpdated(mCrime);
 
             c.close();
 

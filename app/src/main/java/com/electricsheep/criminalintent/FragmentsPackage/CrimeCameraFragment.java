@@ -1,4 +1,4 @@
-package com.electricsheep.criminalintent;
+package com.electricsheep.criminalintent.FragmentsPackage;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -14,6 +14,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.electricsheep.criminalintent.R;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

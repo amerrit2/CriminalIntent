@@ -1,9 +1,11 @@
-package com.electricsheep.criminalintent;
+package com.electricsheep.criminalintent.ActivitiesPackage;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.electricsheep.criminalintent.FragmentsPackage.CrimeCameraFragment;
 
 /**
  * Created by Adam on 9/12/2015.

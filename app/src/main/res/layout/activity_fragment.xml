@@ -5,6 +5,8 @@
     tools:context=".CrimeActivity"
     android:id="@+id/fragmentContainer">
 
+
+
     
 
 </FrameLayout>

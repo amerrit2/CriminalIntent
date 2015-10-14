@@ -12,18 +12,18 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity android:name=".CrimePagerActivity"
+        <activity android:name=".ActivitiesPackage.CrimePagerActivity"
                   android:label="@string/app_name">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                       android:value=".CrimeListActivity"/>
+                       android:value=".ActivitiesPackage.CrimeListActivity"/>
         </activity>
-        <activity android:name=".CrimeListActivity">
+        <activity android:name=".ActivitiesPackage.CrimeListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".CrimeCameraActivity"
+        <activity android:name=".ActivitiesPackage.CrimeCameraActivity"
                   android:screenOrientation="landscape"
                   android:label="@string/app_name">
 

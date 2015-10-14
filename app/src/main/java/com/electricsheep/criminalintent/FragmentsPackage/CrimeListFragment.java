@@ -1,6 +1,7 @@
-package com.electricsheep.criminalintent;
+package com.electricsheep.criminalintent.FragmentsPackage;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,10 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.electricsheep.criminalintent.Crime;
+import com.electricsheep.criminalintent.CrimeLab;
+import com.electricsheep.criminalintent.R;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +39,27 @@ public class CrimeListFragment extends ListFragment {
     private static final String LOG_CATEGORY = "CrimeListFragment";
     private ArrayList<Crime> mCrimes;
     private boolean mSubtitleVisible;
+    private Callbacks mCAllbacks;
+
+    /**
+     * Required interface for hosting activities
+     */
+    public interface Callbacks {
+        void onCrimeSelected(Crime crime);
+
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCAllbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCAllbacks = null;
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -137,8 +163,6 @@ public class CrimeListFragment extends ListFragment {
             }
         }
 
-
-
         return v;
 
     }
@@ -150,9 +174,12 @@ public class CrimeListFragment extends ListFragment {
             case(R.id.menu_item_new_crime):
                 Crime c = new Crime();
                 CrimeLab.get(getActivity()).addCrime(c);
-                Intent i = new Intent(getActivity(), CrimePagerActivity.class);
+                /*Intent i = new Intent(getActivity(), CrimePagerActivity.class);
                 i.putExtra(CrimeFragment.EXTRA_CRIME_ID, c.getId());
-                startActivityForResult(i, 0);
+                startActivityForResult(i, 0);*/
+                ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
+                mCAllbacks.onCrimeSelected(c);
+
                 return true;
             case(R.id.menu_item_show_subtitle):
                 if(getActivity().getActionBar().getSubtitle() == null){
@@ -201,11 +228,16 @@ public class CrimeListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         Crime theCrime = ((CrimeAdapter) getListAdapter()).getItem(position);
 
-        Intent i = new Intent(getActivity(), CrimePagerActivity.class);
+        /*Intent i = new Intent(getActivity(), CrimePagerActivity.class);
         i.putExtra(CrimeFragment.EXTRA_CRIME_ID, theCrime.getId());
-        startActivity(i);
+        startActivity(i);*/
 
+        mCAllbacks.onCrimeSelected(theCrime);
 
+    }
+
+    public void updateUI(){
+        ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     private class CrimeAdapter extends ArrayAdapter<Crime>{
@@ -237,5 +269,6 @@ public class CrimeListFragment extends ListFragment {
 
         }
     }
+
 
 }

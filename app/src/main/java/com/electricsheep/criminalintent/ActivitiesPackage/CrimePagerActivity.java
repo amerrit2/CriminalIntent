@@ -1,13 +1,16 @@
-package com.electricsheep.criminalintent;
+package com.electricsheep.criminalintent.ActivitiesPackage;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+
+import com.electricsheep.criminalintent.Crime;
+import com.electricsheep.criminalintent.CrimeLab;
+import com.electricsheep.criminalintent.FragmentsPackage.CrimeFragment;
+import com.electricsheep.criminalintent.R;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -15,10 +18,17 @@ import java.util.UUID;
 /**
  * Created by Adam on 10/12/2014.
  */
-public class CrimePagerActivity extends FragmentActivity{
+public class CrimePagerActivity extends FragmentActivity
+    implements CrimeFragment.Callbacks {
 
     private ViewPager        mViewPager;
     private ArrayList<Crime> mCrimes;
+
+
+    @Override
+    public void onCrimeUpdated(Crime crime) {
+        //Do nothing
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

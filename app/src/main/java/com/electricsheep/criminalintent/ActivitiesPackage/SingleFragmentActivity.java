@@ -1,9 +1,11 @@
-package com.electricsheep.criminalintent;
+package com.electricsheep.criminalintent.ActivitiesPackage;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+
+import com.electricsheep.criminalintent.R;
 
 /**
  * Created by Adam on 10/11/2014.
